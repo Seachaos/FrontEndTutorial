@@ -1,0 +1,9 @@
+**/yarn.lock
+**/node_modules/*
+
+**/NodeMock/public/*
+**/NodeMock/data/*
+
+.DS_Store
+
+!.gitkeep
