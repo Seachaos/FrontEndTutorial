@@ -15,7 +15,7 @@ thts will be our test server.
 
 + run `yarn build` to check everything is ok.
 
-### Step 2. create post
+### Step 2. test post is work
 
 + open Terminal and go to NodeMock folder
 
