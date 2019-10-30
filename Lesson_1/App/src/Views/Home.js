@@ -47,8 +47,8 @@ export default class Home extends React.Component {
         super(props);
 
         this.state = {
-            first_name: 'F',
-            last_name: 'L'
+            first_name: '',
+            last_name: ''
         }
     }
 
@@ -57,13 +57,30 @@ export default class Home extends React.Component {
         postUserData(arg);
     }
 
+    autoSend = () => {
+        if (!this.state.first_name || !this.state.last_name) {
+            return;
+        }
+
+        alert('YO!');
+        this.post_data();
+
+        this.setState({
+            first_name: '',
+            last_name: ''
+        });
+    }
+
     render() {
         return <div style={styles.home}>
             <h1>Test Post</h1>
             <UserListClass />
-            <input value={ this.state.first_name } onChange={ e => this.setState({first_name: e.target.value})} /><br />
-            <input value={ this.state.last_name } onChange={ e => this.setState({last_name: e.target.value})} /><br />
+            <input onBlur={ this.autoSend } value={this.state.first_name} onChange={e => this.setState({ first_name: e.target.value })} /><br />
+            <input onBlur={ this.autoSend } value={this.state.last_name} onChange={e => this.setState({ last_name: e.target.value })} /><br />
             <div className="button" onClick={this.post_data} >POST</div>
+            <div style={{ width: 200, height: 200, backgroundColor: '#FF0' }} onMouseOver={this.autoSend}>
+
+            </div>
         </div>
     }
 }
