@@ -48,13 +48,26 @@ export default class Home extends React.Component {
 
         this.state = {
             first_name: '',
-            last_name: ''
+            last_name: '',
+
+            users: [{
+                first_name: 'A'
+            },
+            {
+                first_name: 'B'
+            }]
         }
+    }
+
+    componentWillMount () {
+        this.loadUserDataFromServer ();
     }
 
     post_data = () => {
         const arg = `first_name=${this.state.first_name}&last_name=${this.state.last_name}`;
-        postUserData(arg);
+        postUserData(arg, _ => {
+            this.loadUserDataFromServer ();
+        });
     }
 
     autoSend = () => {
@@ -71,35 +84,7 @@ export default class Home extends React.Component {
         });
     }
 
-    render() {
-        return <div style={styles.home}>
-            <h1>Test Post</h1>
-            <UserListClass />
-            <input onBlur={ this.autoSend } value={this.state.first_name} onChange={e => this.setState({ first_name: e.target.value })} /><br />
-            <input onBlur={ this.autoSend } value={this.state.last_name} onChange={e => this.setState({ last_name: e.target.value })} /><br />
-            <div className="button" onClick={this.post_data} >POST</div>
-            <div style={{ width: 200, height: 200, backgroundColor: '#FF0' }} onMouseOver={this.autoSend}>
-
-            </div>
-        </div>
-    }
-}
-
-class UserListClass extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            users: [{
-                first_name: 'A'
-            },
-            {
-                first_name: 'B'
-            }]
-        };
-    }
-
-    componentWillMount() {
+    loadUserDataFromServer () {
         fetchUserData(data => {
             console.log(data);
             this.setState({
@@ -108,10 +93,38 @@ class UserListClass extends React.Component {
         })
     }
 
+    renderTouchArea() {
+        return <div style={{ width: 200, height: 200, backgroundColor: '#FF0' }} onMouseOver={this.autoSend}></div>
+    }
+
+    renderInput() {
+        return <div>
+            <input onBlur={this.autoSend} value={this.state.first_name} onChange={e => this.setState({ first_name: e.target.value })} /><br />
+            <input onBlur={this.autoSend} value={this.state.last_name} onChange={e => this.setState({ last_name: e.target.value })} /><br />
+            <div className="button" onClick={this.post_data} >POST</div>
+        </div>
+    }
+
+    render() {
+        return <div style={styles.home}>
+            <h1>Test Post</h1>
+            {this.renderInput()}
+            {this.renderTouchArea()}
+            <UserListClass
+                users={ this.state.users } />
+        </div>
+    }
+}
+
+class UserListClass extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return <div>
             <h1>Class</h1>
-            {this.state.users.map((user, index) => {
+            {this.props.users.map((user, index) => {
                 return <div key={index}>
                     {index} - {user.first_name} {user.last_name}
                 </div>
@@ -131,7 +144,7 @@ const styles = {
 }
 
 
-function postUserData(data) {
+function postUserData(data, callback) {
     fetch('/users', {
         method: 'POST',
         headers: {
@@ -141,10 +154,12 @@ function postUserData(data) {
     }).then(response => response.json()).then(json => {
         alert('Success');
         console.log(json);
+        callback ();
     }).catch(error => {
         alert('Failed: ' + error);
     })
 }
+
 function fetchUserData(callback) {
     fetch('/users', {
         method: 'GET',
